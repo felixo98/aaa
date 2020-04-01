@@ -1,5 +1,6 @@
 #!/bin/bash
-# Alejandro Adell Pina :735061
+# 735061,Adell Pina,Alejandro ,M,4,A 
+# 746207,Garcia Rodriguez,Felix,M,4,A 
 
 if [[ $(id -u) != 0 ]] #El usuario efectivo distinto de 0
 	then

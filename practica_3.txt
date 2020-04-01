@@ -1,0 +1,36 @@
+PRACTICA 3
+Alejandro Adell Pina (735061)
+Felix Garcia Rodriguez(746207)
+
+Primero con if se ha  tratado los casos de error : 
+	Privilegios de administracion : usando id -u !=0 , asi dara error si el id del usuario efectivo es distinto de 0.
+	Error de sintaxis : Hemos comprobado que en numero de parametros era el correcto y que las opciones eran -a (para añadir usuario) y -s (para borrar).
+	
+Si es -a (añadir usuarios):
+	IFS=, se usa para que el limitador para guardar en las variables a la hora de leer en el fichero sea ','
+	Se utiliza read mediante un bucle que mientras haya para leer de el fichero de nombre $2 (done<$2) ,se guarde en las variables usuario , contrasena y nombre.
+	Dentro del bucle :
+		Se mira que ninguna de las anteriores variables sea un string nulo , si lo es se para la ejecucion.
+		Se comprueba si el usuario ya existe con  "if id -u "$usuario" >/dev/null 2>&1" y se redirige la salida para que no muestre mensaje.
+		Si el usuario existe no hace nada, si no existe:
+			-Se utiliza " useradd -c "$nombre" "$usuario" -m -k /etc/skel -K UID_MIN =1815 -K PASS_MAX_DAYS=30 -U" para no usar opciones por defecto. 
+			poner UID minimo de 1815,cambiar la contaseña una ves cada 30 dias y que la direccion del skeleton sea siempre /etc/skel independientemente de 
+			que el fichero de configuracion /etc/default/useradd haya sido modificado.
+			caducidad de contraseña 1 mes , -U para crear un grupo con el mismo nombre que el usuario y -m para crear el directorio home.
+			-Se utiliza "sudo usermod -d "/home/$usuario" $usuario " para cambiar la direccion de la carpeta home del usuario creado.
+			-Se utiliza "echo "$usuario:$contrasena" | sudo chpasswd" para cambiar la contraseña a la que esta en el fichero.
+
+Si es -s (borrado usuarios):
+	Primero se crea si no existe el directorio "/extra/backup" ya que hay que crearlo aunque no borre ningun usuario.
+	Se emplea el mismo metodo que a la hora de añadir usuarios para leer en el fichero y dar valor a las variables usuario, contrasena y nombre.
+	Dentro del bucle:
+		Se comprueba si el usuario existe (igual que en el añadir usuarios), si existe:
+			Se intenta crear una backup del usuario usando "if [ $(tar Pcfz "/extra/backup/$usuario.tar" "/home/$usuario")=0 ]" y si da 0 (se ha creado correctamente) se procede al borrado:
+				Usando : "sudo userdel -f -r $usuario" usando -f para que se borre aunque este conectado y -r para borrar el directorio de inicio del usuario.
+	
+
+
+			
+			
+			
+			
